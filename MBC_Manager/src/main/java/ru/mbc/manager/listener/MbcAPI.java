@@ -45,7 +45,7 @@ public class MbcAPI extends Thread {
             String id = ctx.request().getParam("ledgerId");
             String targetLedgerAddress = null;
             try {
-                targetLedgerAddress = Hex.decodeHex(id).toString();
+                targetLedgerAddress = new String(Hex.decodeHex(id));
             } catch (DecoderException e) {
                 e.printStackTrace();
             }
@@ -78,8 +78,18 @@ public class MbcAPI extends Thread {
         router.route(HttpMethod.GET, "/verify/:ledgerId/:txHash/").handler(ctx -> {
 
             HttpServerResponse response = ctx.response();
-            String id = ctx.request().getParam("ledgerId");
+            String ledgerId = ctx.request().getParam("ledgerId");
             String hash = ctx.request().getParam("txHash");
+            String targetLedgerAddress = null;
+            try {
+                targetLedgerAddress = new String(Hex.decodeHex(ledgerId));
+            } catch (DecoderException e) {
+                e.printStackTrace();
+            }
+            if(!targetLedgerAddress.equals(logic.getCurrentLedgerAddress())){
+                response.setStatusCode(404);
+                response.end("Wrong node");
+            }
 
             // TODO: request to bc api
             Boolean result = true;

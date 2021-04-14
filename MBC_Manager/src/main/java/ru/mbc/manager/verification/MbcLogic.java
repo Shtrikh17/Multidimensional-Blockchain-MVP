@@ -50,7 +50,7 @@ public class MbcLogic extends Thread {
     public String getNextLedger(String currentLedger, String targetLedger) throws InvalidPathException {
         if(currentLedger.equals(targetLedger))
             return null;
-        if(currentLedger.contains(targetLedger)){
+        if(targetLedger.contains(currentLedger)){
             ArrayList<String> tmp = new ArrayList(Arrays.asList(targetLedger.split("/")));
             ArrayList<String> myTmp = new ArrayList(Arrays.asList(currentLedger.split("/")));
             return currentLedger + "/" + tmp.get(myTmp.size());

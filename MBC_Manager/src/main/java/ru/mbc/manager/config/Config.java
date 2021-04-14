@@ -77,6 +77,7 @@ public class Config {
                 node.port = jo.getInt("port");
                 child.nodes.add(node);
             }
+            children.ledgers.add(child);
         }
     }
 
