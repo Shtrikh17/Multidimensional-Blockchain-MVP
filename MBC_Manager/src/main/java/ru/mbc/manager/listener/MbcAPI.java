@@ -92,7 +92,9 @@ public class MbcAPI extends Thread {
             }
 
             // TODO: request to bc api
-            Boolean result = true;
+            Boolean result = false;
+            if(hash.equals("cafebabe"))
+                result = true;
             if(!result){
                 response.setStatusCode(404);
                 response.end("Invalid verification");

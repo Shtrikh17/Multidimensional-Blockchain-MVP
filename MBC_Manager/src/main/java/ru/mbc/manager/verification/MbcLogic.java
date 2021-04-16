@@ -2,6 +2,7 @@ package ru.mbc.manager.verification;
 
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import ru.mbc.manager.config.ChildLedger;
 import ru.mbc.manager.config.Config;
@@ -22,9 +23,9 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 
 class Response{
-    public static ArrayList<NodeConfig> nodes;
-    public static Boolean end;
-    public static String nextLedger;
+    public ArrayList<NodeConfig> nodes;
+    public Boolean end;
+    public String nextLedger;
 
     public Response(){
         nodes = new ArrayList<>();
@@ -85,30 +86,33 @@ public class MbcLogic extends Thread {
                     null,
                     node.ip,
                     node.port,
-                    "/search/" + Hex.encodeHex(ledger.getBytes(StandardCharsets.UTF_8)) + "/",
+                    "/search/" + new String(Hex.encodeHex(ledger.getBytes(StandardCharsets.UTF_8))) + "/",
                     null,
                     null
             )).build();
             httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (InterruptedException | IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-        JSONObject json = new JSONObject(httpResponse.body());
-        String code = json.getString("response");
-        if(code.equals("me")){
-            response.end = true;
-        }
-        else if (code.equals("next")){
-            response.nextLedger = json.getString("address");
-            JSONArray ja = json.getJSONArray("nodes");
-            for(int i = 0; i < ja.length(); i++){
-                JSONObject jo = ja.getJSONObject(i);
-                NodeConfig nextNode = new NodeConfig();
-                nextNode.ip = jo.getString("ip");
-                nextNode.port = jo.getInt("port");
-                response.nodes.add(nextNode);
+            JSONObject json = new JSONObject(httpResponse.body());
+            String code = json.getString("response");
+            if(code.equals("me")){
+                response.end = true;
             }
+            else if (code.equals("next")){
+                response.nextLedger = json.getString("address");
+                JSONArray ja = json.getJSONArray("nodes");
+                for(int i = 0; i < ja.length(); i++){
+                    JSONObject jo = ja.getJSONObject(i);
+                    NodeConfig nextNode = new NodeConfig();
+                    nextNode.ip = jo.getString("ip");
+                    nextNode.port = jo.getInt("port");
+                    response.nodes.add(nextNode);
+                }
+            }
+
+        } catch (InterruptedException | JSONException | NullPointerException | IOException | URISyntaxException e) {
+            e.printStackTrace();
+            return null;
         }
+
         return response;
     }
 
@@ -122,7 +126,7 @@ public class MbcLogic extends Thread {
                     null,
                     node.ip,
                     node.port,
-                    "/verify/" + Hex.encodeHex(ledger.getBytes(StandardCharsets.UTF_8)) + "/" + txHash + "/",
+                    "/verify/" + new String(Hex.encodeHex(ledger.getBytes(StandardCharsets.UTF_8))) + "/" + txHash + "/",
                     null,
                     null
             )).build();
@@ -140,10 +144,17 @@ public class MbcLogic extends Thread {
                 TxDescriptor tx = queue.take();
                 String nextLedger = getNextLedger(myLedger, tx.getLedgerAddress());
                 ArrayList<NodeConfig> nodes = getNodesForLedger(nextLedger);
+                boolean noNodes = false;
                 while(true){
+                    if(nodes.size() == 0){
+                        noNodes = true;
+                        break;
+                    }
                     ArrayList<Response> responses = new ArrayList<>();
                     for(NodeConfig node: nodes){
-                        responses.add(requestSearch(nextLedger, node));
+                        Response r = requestSearch(tx.getLedgerAddress(), node);
+                        if(r != null)
+                            responses.add(r);
                     }
 
                     // End
@@ -152,7 +163,7 @@ public class MbcLogic extends Thread {
                         if(response.end)
                             endCount += 1;
                     }
-                    if(endCount >= responses.size() / 2){
+                    if(endCount >= (responses.size() / 2) + 1){
                         break;
                     }
 
@@ -170,25 +181,33 @@ public class MbcLogic extends Thread {
                     }
 
                     // find intersection of responses
-                    nodes.clear();
+                    nodes = new ArrayList<>();
                     for(NodeConfig N: intersection.keySet()){
                         if(intersection.get(N) > responses.size() / 2)
                             nodes.add(N);
                     }
                 }
+                if(!noNodes){
+                    ArrayList<Boolean> responses = new ArrayList<>();
+                    for(NodeConfig node: nodes){
+                        responses.add(requestVerify(tx.getLedgerAddress(), tx.getTxHash(), node));
+                    }
+                    Integer responseCount = 0;
+                    for(Boolean r: responses){
+                        if(r)
+                            responseCount += 1;
+                    }
+                    if(responseCount > responses.size() / 2){
+                        System.out.println("NOTIFY BC HERE");
+                    }
+                    else{
+                        System.out.println("Invalid verification");
+                    }
+                }
+                else{
+                    System.out.println("No ledger found");
+                }
 
-                ArrayList<Boolean> responses = new ArrayList<>();
-                for(NodeConfig node: nodes){
-                    responses.add(requestVerify(tx.getLedgerAddress(), tx.getTxHash(), node));
-                }
-                Integer responseCount = 0;
-                for(Boolean r: responses){
-                    if(r)
-                        responseCount += 1;
-                }
-                if(responseCount > responses.size() / 2){
-                    System.out.println("NOTIFY BC HERE");
-                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

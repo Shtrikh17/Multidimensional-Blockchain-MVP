@@ -20,7 +20,7 @@ public class TxDescriptor {
 
     public TxDescriptor(String jsonString){
         JSONObject json = new JSONObject(jsonString);
-        String tx = json.getString("host");
+        String tx = json.getString("tx");
         ArrayList<String> tokens = new ArrayList(Arrays.asList(tx.split("/")));
         TxHash = tokens.get(tokens.size()-1);
         tokens.remove(tokens.size()-1);

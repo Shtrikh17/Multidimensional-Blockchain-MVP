@@ -1,0 +1,14 @@
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/listener/MbcAPI.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/Config.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/ChildLedgerConfig.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/ConfigError.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/BC_API.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/MBC_API.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/listener/BcAPI.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/main.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/verification/TxDescriptor.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/General.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/ChildLedger.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/NodeConfig.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/verification/MbcLogic.java
+/home/user/IdeaProjects/MBC_Manager/src/main/java/ru/mbc/manager/config/ParentLedgerConfig.java
