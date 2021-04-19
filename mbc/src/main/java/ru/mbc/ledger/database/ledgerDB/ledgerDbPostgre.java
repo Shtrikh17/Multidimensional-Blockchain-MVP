@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.*;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,7 +107,7 @@ public class ledgerDbPostgre {
         String[] dbQueries = {
                 "CREATE TABLE IF NOT EXISTS STATES (id serial PRIMARY KEY, hash bytea UNIQUE, storage bytea)",
                 "CREATE TABLE IF NOT EXISTS BLOCKS (id serial PRIMARY KEY, hash bytea UNIQUE, parentHash bytea, stateHash bytea, registryHash bytea, sTxHash bytea, rTxHash bytea, number INTEGER, consensus bytea, sTx bytea[], rTx bytea[])",
-                "CREATE TABLE IF NOT EXISTS STX (id serial PRIMARY KEY, hash bytea UNIQUE, nonce INTEGER, addressFrom bytea, addressTo bytea, value INTEGER, signature bytea, type INTEGER, verified BOOLEAN, included BOOLEAN)",
+                "CREATE TABLE IF NOT EXISTS STX (id serial PRIMARY KEY, hash bytea UNIQUE, nonce INTEGER, verify_ctr INTEGER, addressFrom bytea, addressTo bytea, value INTEGER, signature bytea, type INTEGER, verified BOOLEAN, included BOOLEAN)",
                 "CREATE TABLE IF NOT EXISTS REGISTRY (id serial PRIMARY KEY, hash bytea UNIQUE, storage bytea)",
                 "CREATE TABLE IF NOT EXISTS RTX (id serial PRIMARY KEY, hash bytea UNIQUE, nonce INTEGER, descriptor bytea, included BOOLEAN)"
         };
@@ -229,7 +230,7 @@ public class ledgerDbPostgre {
     }
 
     public void addTransaction(MvpStateTx tx){
-        String dbQuery = "INSERT INTO STX (hash, nonce, addressFrom, addressTo, value, signature, included, type, verified) VALUES (?,?,?,?,?,?,?,?,?)";
+        String dbQuery = "INSERT INTO STX (hash, nonce, addressFrom, addressTo, value, signature, included, type, verified, verify_ctr) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try{
             Connection c = DriverManager.getConnection(url + database, user, password);
             PreparedStatement pst = c.prepareStatement(dbQuery);
@@ -243,6 +244,7 @@ public class ledgerDbPostgre {
             pst.setBoolean(7, tx.getIncluded());
             pst.setInt(8, tx.getRawType());
             pst.setBoolean(9, tx.getVerified());
+            pst.setInt(10, 0);
             pst.execute();
             pst.close();
             c.close();
@@ -383,6 +385,20 @@ public class ledgerDbPostgre {
 
     public void txMarkAsVerified(HashSum hashSum) throws NoSuchEntity{
         updateBooleanField(hashSum, "verified");
+        String dbQuery = "UPDATE STX SET verify_ctr = 1 WHERE hash=(?)";
+        try{
+            Connection c = DriverManager.getConnection(url + database, user, password);
+            PreparedStatement pst = c.prepareStatement(dbQuery);
+            pst.setBinaryStream(1, new ByteArrayInputStream(hashSum.getArray()));
+            pst.execute();
+            pst.close();
+            c.close();
+        }
+        catch (SQLException ex){
+            Logger lgr = Logger.getLogger(ledgerDbPostgre.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            throw new NoSuchEntity("No transaction found");
+        }
     }
 
     public void txMarkAsIncluded(HashSum hashSum) throws NoSuchEntity {
@@ -395,7 +411,7 @@ public class ledgerDbPostgre {
 
     public ArrayList<MvpStateTx> obtainTx(Integer N){
         ArrayList<MvpStateTx> txList = new ArrayList<MvpStateTx>();
-        String dbQuery = "SELECT * FROM STX WHERE included = false and (type = 0 or type = 1 or type = 2 and verified = true) LIMIT " + N.toString();
+        String dbQuery = "SELECT * FROM STX WHERE included = false and (type = 0 or type = 1 or type = 2 and verified = true and verify_ctr = 0) LIMIT " + N.toString();
         try{
             Connection c = DriverManager.getConnection(url + database, user, password);
             PreparedStatement pst = c.prepareStatement(dbQuery);
@@ -421,7 +437,49 @@ public class ledgerDbPostgre {
             Logger lgr = Logger.getLogger(ledgerDbPostgre.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }
+
         return txList;
+    }
+
+    public void modifyVerifyCounters(){
+        String dbQuery1 = "SELECT hash, verify_ctr FROM STX WHERE verify_ctr > 0";
+        Hashtable<HashSum, Integer> table = new Hashtable<>();
+        try{
+            Connection c = DriverManager.getConnection(url + database, user, password);
+            PreparedStatement pst = c.prepareStatement(dbQuery1);
+            ResultSet rs = pst.executeQuery();
+            while(rs.next()){
+                table.put(new HashSum(rs.getBinaryStream("hash").readAllBytes()), rs.getInt("verify_ctr"));
+            }
+            rs.close();
+            pst.close();
+            c.close();
+        }
+        catch (SQLException ex){
+            Logger lgr = Logger.getLogger(ledgerDbPostgre.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            throw new NoSuchEntity("No transaction found");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String dbQuery2 = "UPDATE STX SET verify_ctr = (?) WHERE hash=(?)";
+        try{
+            Connection c = DriverManager.getConnection(url + database, user, password);
+            for(HashSum h: table.keySet()){
+                PreparedStatement pst = c.prepareStatement(dbQuery2);
+                pst.setInt(1, table.get(h) - 1);
+                pst.setBinaryStream(2, new ByteArrayInputStream(h.getArray()));
+                pst.execute();
+                pst.close();
+            }
+            c.close();
+        }
+        catch (SQLException ex){
+            Logger lgr = Logger.getLogger(ledgerDbPostgre.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            throw new NoSuchEntity("No transaction found");
+        }
     }
 
     public ArrayList<MvpStateTx> getPendingStateTx(){

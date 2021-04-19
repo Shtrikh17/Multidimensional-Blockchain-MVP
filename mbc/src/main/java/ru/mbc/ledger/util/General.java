@@ -5,4 +5,6 @@ public class General {
     public String nodeId;
     public Integer apiPort;
     public Integer bcPort;
+    public Integer mbcPort;
+    public Integer mbcManager;
 }

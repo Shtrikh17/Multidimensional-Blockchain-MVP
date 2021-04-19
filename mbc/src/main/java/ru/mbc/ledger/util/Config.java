@@ -48,6 +48,8 @@ public class Config {
         general.nodeId = jsonElement.getString("node_id");
         general.apiPort = jsonElement.getInt("api_port");
         general.bcPort = jsonElement.getInt("bc_port");
+        general.mbcPort = jsonElement.getInt("mbc_server");
+        general.mbcManager = jsonElement.getInt("mbc_manager");
 
         // Consensus
         jsonElement = json.getJSONObject("consensus");

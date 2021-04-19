@@ -171,6 +171,9 @@ public class MvpBlockchain {
 
             // 13. notify consensus
             consensusNotify.setMarker();
+
+            // 14. Fix counters
+            db.modifyVerifyCounters();
         }
         finally{
             lock.unlock();
@@ -197,7 +200,7 @@ public class MvpBlockchain {
             chainSelector.notifyNewBlock(container.block);
             consensusNotify.setMarker();
             network.broadcast_new_block(container);
-            // TODO: broadcast here
+            db.modifyVerifyCounters();
 
         }finally {
             lock.unlock();

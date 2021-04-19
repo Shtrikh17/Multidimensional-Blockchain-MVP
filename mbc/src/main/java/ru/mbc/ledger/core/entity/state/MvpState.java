@@ -84,25 +84,40 @@ public class MvpState implements SerializableEntity, HashableEntity {
 
 
     public boolean checkTX(MvpStateTx tx) throws LedgerAccountValueError, SignatureError, NonceError, BalanceError {
-        HashSum fromAddress = new HashSum(tx.getFrom());
-        // From address exists
-        if(!storage.containsKey(fromAddress)){
-            throw new LedgerAccountValueError("No from address in the ledger");
-        }
+        if(!tx.getExternalIn()){
+            HashSum fromAddress = new HashSum(tx.getFrom());
+            // From address exists
+            if(!storage.containsKey(fromAddress)){
+                throw new LedgerAccountValueError("No from address in the ledger");
+            }
 
-        // Check signature
-        if(!secUtil.checkTxSignature(tx)){
-            throw new SignatureError("Invalid signature");
-        }
+            // Check signature
+            if(!secUtil.checkTxSignature(tx)){
+                throw new SignatureError("Invalid signature");
+            }
 
-        if(storage.get(fromAddress).getNonce() + 1 != tx.getNonce()){
-            throw new NonceError("Incorrect nonce value");
-        }
+            if(storage.get(fromAddress).getNonce() + 1 != tx.getNonce()){
+                throw new NonceError("Incorrect nonce value");
+            }
 
-        // Balance is enough to perform operation or user is superuser
-        if(!superusers.contains(fromAddress)){
-            if(storage.get(fromAddress).getBalance() < tx.getValue()){
-                throw new BalanceError("From account balance less than value transmitted");
+            // Balance is enough to perform operation or user is superuser
+            if(!superusers.contains(fromAddress)){
+                if(storage.get(fromAddress).getBalance() < tx.getValue()){
+                    throw new BalanceError("From account balance less than value transmitted");
+                }
+            }
+        }
+        else{
+            HashSum toAddress = new HashSum(tx.getTo());
+            if(storage.get(toAddress) != null){
+                if(storage.get(toAddress).getNonce() + 1 != tx.getNonce()){
+                    throw new NonceError("Incorrect nonce value");
+                }
+            }
+            else{
+                if(tx.getNonce() != 0){
+                    throw new NonceError("Incorrect nonce value");
+                }
             }
         }
 

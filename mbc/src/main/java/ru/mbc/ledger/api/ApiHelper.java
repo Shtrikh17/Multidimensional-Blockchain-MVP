@@ -163,14 +163,14 @@ public class ApiHelper {
 
     public static MvpStateTx makeStateTx(String json) throws InvalidParameter{
         JSONObject jo = new JSONObject(json);
-        HashSum from;
+        String from;
         String to;
         Integer nonce, value;
         byte[] sign;
         MvpStateTxType type;
         try {
             nonce = jo.getInt("nonce");
-            from = new HashSum(Hex.decodeHex(jo.getString("from")));
+            from = jo.getString("from");
             to = jo.getString("to");
             value = jo.getInt("value");
             sign = Hex.decodeHex(jo.getString("signature"));

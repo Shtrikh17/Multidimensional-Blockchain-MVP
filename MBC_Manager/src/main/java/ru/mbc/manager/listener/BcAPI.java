@@ -18,13 +18,15 @@ public class BcAPI extends Thread {
     ArrayBlockingQueue<TxDescriptor> queue;
     String host;
     Integer port;
+    String currentLedger;
 
-    public BcAPI(String host, Integer port, ArrayBlockingQueue<TxDescriptor> _q){
+    public BcAPI(String host, Integer port, ArrayBlockingQueue<TxDescriptor> _q, String _currentLedger){
         vertx = Vertx.vertx();
         server = vertx.createHttpServer();
         queue = _q;
         this.host = host;
         this.port = port;
+        currentLedger = _currentLedger;
     }
 
     @Override
@@ -36,7 +38,7 @@ public class BcAPI extends Thread {
             HttpServerResponse response = ctx.response();
 
             String json = ctx.getBodyAsString().strip();
-            queue.add(new TxDescriptor(json));
+            queue.add(new TxDescriptor(json, currentLedger));
 
             response.putHeader("content-type", "application/json");
             response.end("{\"status\": \"ok\"}");

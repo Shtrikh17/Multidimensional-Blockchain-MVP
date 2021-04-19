@@ -30,6 +30,7 @@ class Response{
     public Response(){
         nodes = new ArrayList<>();
         end = false;
+
     }
 }
 
@@ -39,13 +40,15 @@ public class MbcLogic extends Thread {
     private String parentLedger;
     private ArrayList<ChildLedger> childLedgers;
     ArrayBlockingQueue<TxDescriptor> queue;
+    private Integer bcPort;
 
-    public MbcLogic(Config config, ArrayBlockingQueue<TxDescriptor> q){
+    public MbcLogic(Config config, ArrayBlockingQueue<TxDescriptor> q, Integer _bcPort){
         myLedger = config.general.ledgerAddress;
         parentNodes = config.parent.nodes;
         childLedgers = config.children.ledgers;
         queue = q;
         parentLedger = config.parent.ledgerAddress;
+        bcPort = _bcPort;
     }
 
     public String getNextLedger(String currentLedger, String targetLedger) throws InvalidPathException {
@@ -116,7 +119,38 @@ public class MbcLogic extends Thread {
         return response;
     }
 
-    public boolean requestVerify(String ledger, String txHash, NodeConfig node){
+    public boolean requestVerify(TxDescriptor tx, NodeConfig node){
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = null;
+        HttpResponse<String> httpResponse = null;
+
+        JSONObject jo = new JSONObject();
+        jo.put("tx", tx.getTxHash());
+        jo.put("value", tx.getValue());
+        jo.put("to", tx.getToAddress());
+        String requestBody = jo.toString();
+
+        try {
+            request = HttpRequest.newBuilder().uri(new URI(
+                    "http",
+                    null,
+                    "127.0.0.1",
+                    bcPort,
+                    "/verify/",
+                    null,
+                    null
+            ))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+            httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException | IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return httpResponse.statusCode() != 404;
+    }
+
+    public void notifyBc(TxDescriptor tx){
+        String requestBody = "{\"tx\":\"" + tx.getTxHash() +"\" }";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = null;
         HttpResponse<String> httpResponse = null;
@@ -124,17 +158,18 @@ public class MbcLogic extends Thread {
             request = HttpRequest.newBuilder().uri(new URI(
                     "http",
                     null,
-                    node.ip,
-                    node.port,
-                    "/verify/" + new String(Hex.encodeHex(ledger.getBytes(StandardCharsets.UTF_8))) + "/" + txHash + "/",
+                    "127.0.0.1",
+                    bcPort,
+                    "/post_verify/",
                     null,
                     null
-            )).build();
+            ))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
             httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (InterruptedException | IOException | URISyntaxException e) {
             e.printStackTrace();
         }
-        return httpResponse.statusCode() != 404;
     }
 
     @Override
@@ -190,7 +225,7 @@ public class MbcLogic extends Thread {
                 if(!noNodes){
                     ArrayList<Boolean> responses = new ArrayList<>();
                     for(NodeConfig node: nodes){
-                        responses.add(requestVerify(tx.getLedgerAddress(), tx.getTxHash(), node));
+                        responses.add(requestVerify(tx, node));
                     }
                     Integer responseCount = 0;
                     for(Boolean r: responses){
@@ -198,7 +233,7 @@ public class MbcLogic extends Thread {
                             responseCount += 1;
                     }
                     if(responseCount > responses.size() / 2){
-                        System.out.println("NOTIFY BC HERE");
+                        notifyBc(tx);
                     }
                     else{
                         System.out.println("Invalid verification");

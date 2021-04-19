@@ -8,6 +8,7 @@ import ru.mbc.ledger.core.entity.state.MvpState;
 import ru.mbc.ledger.core.entity.state.MvpStateTx;
 import ru.mbc.ledger.core.error.api.InvalidParameter;
 import ru.mbc.ledger.core.error.db.NoSuchEntity;
+import ru.mbc.ledger.core.logic.mbcLogic;
 import ru.mbc.ledger.core.logic.stateLogic;
 import ru.mbc.ledger.database.ledgerDB.ledgerDbPostgre;
 import ru.mbc.ledger.network.MvpConfigNetwork;
@@ -22,12 +23,14 @@ public class ApiHandler {
     private stateLogic logic;
     private BeaconConsensusChainSelector chainSelector;
     private MvpConfigNetwork network;
+    private mbcLogic mbc;
 
-    public ApiHandler(ledgerDbPostgre _db, stateLogic _logic, BeaconConsensusChainSelector cs, MvpConfigNetwork nwk){
+    public ApiHandler(ledgerDbPostgre _db, stateLogic _logic, BeaconConsensusChainSelector cs, MvpConfigNetwork nwk, mbcLogic _mbc){
         db = _db;
         logic = _logic;
         chainSelector = cs;
         network = nwk;
+        mbc = _mbc;
     }
 
     public String getLastState(){
@@ -175,7 +178,9 @@ public class ApiHandler {
     public void addStateTx(String json){
         try{
             MvpStateTx tx = makeStateTx(json);
-            // TODO: check state tx validity
+            if(tx.getExternalIn()){
+                mbc.requestTxVerification(tx);
+            }
             db.addTransaction(tx);
             network.broadcast_state_tx(tx);
         }

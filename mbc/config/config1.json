@@ -3,7 +3,9 @@
     "genesis": true,
     "node_id": "1",
     "api_port": 8100,
-    "bc_port": 8101
+    "bc_port": 8101,
+    "mbc_server": 8102,
+    "mbc_manager": 8103
   },
   "state": {
     "accounts": [

@@ -5,6 +5,7 @@ import ru.mbc.ledger.api.ApiRestUi;
 import ru.mbc.ledger.consensus.BeaconConsensusChainSelector;
 import ru.mbc.ledger.consensus.BeaconConsensusSubprocess;
 import ru.mbc.ledger.consensus.ConsensusBlockNotify;
+import ru.mbc.ledger.core.logic.mbcLogic;
 import ru.mbc.ledger.core.logic.registryLogic;
 import ru.mbc.ledger.database.ledgerDB.ledgerDbPostgre;
 import ru.mbc.ledger.core.logic.stateLogic;
@@ -22,6 +23,7 @@ public class Core implements Runnable {
     private registryLogic rLogic;
     private BeaconConsensusSubprocess consensus;
     private MvpConfigNetwork network;
+    private mbcLogic mbc;
 
     public Core(Config c){
         config = c;
@@ -36,7 +38,8 @@ public class Core implements Runnable {
         consensus = new BeaconConsensusSubprocess(consensusNotify, db, config, blockchain);                     // Thread for mining
         blockchain.setConsensus(consensus);                                                                     // fix dependency
         blockchain.setNetwork(network);
-        handler = new ApiHandler(db, sLogic, chainSelector, network);                                                    // UI for observation & tx submission
+        mbc = new mbcLogic("127.0.0.1", config.general.mbcPort, config.general.mbcManager, db);
+        handler = new ApiHandler(db, sLogic, chainSelector, network, mbc);                                                    // UI for observation & tx submission
     }
 
     @Override
@@ -45,6 +48,7 @@ public class Core implements Runnable {
         Thread uiThread = new Thread(ui);
         uiThread.start();
         Thread networkThread = new Thread(network);
+        Thread mbcThread = new Thread(mbc);
 
         Integer last_slot = 0;
         while(true){
@@ -62,12 +66,14 @@ public class Core implements Runnable {
         if(config.consensus.miningAllowed){
             consensus.register();
             consensusThread.start();
-            networkThread.start();
         }
+        networkThread.start();
+        mbcThread.start();
 
         try {
             uiThread.join();
             networkThread.join();
+            mbcThread.join();
             consensusThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
