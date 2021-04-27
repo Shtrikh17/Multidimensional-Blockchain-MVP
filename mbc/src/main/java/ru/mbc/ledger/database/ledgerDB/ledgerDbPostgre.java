@@ -532,8 +532,8 @@ public class ledgerDbPostgre {
             }
             pst.setBinaryStream(3, new ByteArrayInputStream(block.getStateHash().getArray()));
             pst.setBinaryStream(4, new ByteArrayInputStream(block.getRegistryHash().getArray()));
-            pst.setBinaryStream(5, new ByteArrayInputStream(block.getSTxHash().getArray()));
-            pst.setBinaryStream(6, new ByteArrayInputStream(block.getRTxHash().getArray()));
+            pst.setBinaryStream(5, new ByteArrayInputStream(block.getSTxList()));
+            pst.setBinaryStream(6, new ByteArrayInputStream(block.getRTxList()));
             pst.setInt(7, block.getSlot());
             if(block.getConsensus() != null){
                 pst.setBinaryStream(8, new ByteArrayInputStream(block.getConsensus().serialize()));

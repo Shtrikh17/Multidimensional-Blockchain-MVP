@@ -1,9 +1,11 @@
 {
   "general": {
     "genesis": true,
-    "node_id": "2",
-    "rest_api_port": 8200,
-    "ledger_api_port": 8201
+    "node_id": "32",
+    "rest_api_port": 9200,
+    "ledger_api_port": 9201,
+    "mbc_module_port": 9202,
+    "mbc_verifier_port": 9203
   },
   "state": {
     "accounts": [
@@ -19,7 +21,7 @@
   "registry": {},
   "consensus": {
     "host": "127.0.0.1",
-    "port": 5000,
+    "port": 19000,
     "miningAllowed": true,
     "user": {
       "privKey": "00a74763cd68875b4ecc6163fe41d66d184b77ae356b7e2374974b452544272823",
@@ -32,11 +34,11 @@
     "peers": [
       {
         "ip": "127.0.0.1",
-        "port": 8101
+        "port": 9101
       },
       {
         "ip": "127.0.0.1",
-        "port": 8301
+        "port": 9301
       }
     ],
     "pingTimeout": 10,

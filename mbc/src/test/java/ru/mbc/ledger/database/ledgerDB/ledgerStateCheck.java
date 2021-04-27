@@ -8,6 +8,7 @@ import ru.mbc.ledger.util.HashSum;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +18,7 @@ public class ledgerStateCheck {
         ledgerDbPostgre db = new ledgerDbPostgre();
         db.initLedger();
 
-        Hashtable<HashSum, MvpLedgerAccount> balances = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances = new LinkedHashMap<>();
         MvpLedgerUser user1 = new MvpLedgerUser();
         MvpLedgerUser user2 = new MvpLedgerUser();
 
@@ -48,7 +49,7 @@ public class ledgerStateCheck {
         MvpLedgerAccount account1 = new MvpLedgerAccount(100);
         MvpLedgerAccount account2 = new MvpLedgerAccount(50);
 
-        Hashtable<HashSum, MvpLedgerAccount> balances = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances = new LinkedHashMap<>();
         balances.put(user1.getAddress(), account1);
         balances.put(user2.getAddress(), account2);
         MvpState s1 = new MvpState(balances);
@@ -57,7 +58,7 @@ public class ledgerStateCheck {
         user1.signTX(tx);
         s1.applyTX(tx);
 
-        Hashtable<HashSum, MvpLedgerAccount> balances2 = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances2 = new LinkedHashMap<>();
         balances2.put(user1.getAddress(), new MvpLedgerAccount(80));
         balances2.put(user2.getAddress(), new MvpLedgerAccount(70));
 
@@ -79,7 +80,7 @@ public class ledgerStateCheck {
         MvpLedgerAccount account2 = new MvpLedgerAccount(50);
 
         // Init state
-        Hashtable<HashSum, MvpLedgerAccount> balances = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances = new LinkedHashMap<>();
         balances.put(user1.getAddress(), account1);
         balances.put(user2.getAddress(), account2);
         MvpState s1 = new MvpState(balances);
@@ -94,7 +95,7 @@ public class ledgerStateCheck {
         db.addState(s1);
 
         // Create test state
-        Hashtable<HashSum, MvpLedgerAccount> balances2 = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances2 = new LinkedHashMap<>();
         MvpLedgerAccount _account1 = new MvpLedgerAccount(50);
         MvpLedgerAccount _account2 = new MvpLedgerAccount(100);
         balances2.put(user1.getAddress(), _account1);

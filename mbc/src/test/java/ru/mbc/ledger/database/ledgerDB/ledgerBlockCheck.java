@@ -15,6 +15,7 @@ import ru.mbc.ledger.util.helper;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +31,7 @@ class ledgerBlockCheck {
         MvpLedgerUser user2 = new MvpLedgerUser();
         MvpLedgerAccount account1 = new MvpLedgerAccount(100);
         MvpLedgerAccount account2 = new MvpLedgerAccount(100);
-        Hashtable<HashSum, MvpLedgerAccount> balances = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances = new LinkedHashMap<>();
         balances.put(user1.getAddress(), account1);
         balances.put(user2.getAddress(), account2);
 

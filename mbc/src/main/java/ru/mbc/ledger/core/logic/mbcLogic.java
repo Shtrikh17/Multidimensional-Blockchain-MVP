@@ -37,11 +37,11 @@ public class mbcLogic extends Thread{
     ledgerDbPostgre db;
     Integer mbcPort;
 
-    public mbcLogic(String host, Integer port, Integer _mbcPort, ledgerDbPostgre _db){
+    public mbcLogic(String host, Integer verifierPort, Integer _mbcPort, ledgerDbPostgre _db){
         vertx = Vertx.vertx();
         server = vertx.createHttpServer();
         this.host = host;
-        this.port = port;
+        this.port = verifierPort;
         db = _db;
         mbcPort = _mbcPort;
     }

@@ -11,23 +11,18 @@ import io.vertx.ext.web.handler.BodyHandler;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONObject;
-import ru.mbc.ledger.core.entity.block.MvpBlock;
 import ru.mbc.ledger.core.entity.block.MvpBlockContainer;
 import ru.mbc.ledger.core.entity.blockchain.MvpBlockchain;
-import ru.mbc.ledger.core.entity.registry.MvpRegistry;
 import ru.mbc.ledger.core.entity.registry.MvpRegistryTx;
 import ru.mbc.ledger.core.entity.registry.MvpRegistryTxContainer;
-import ru.mbc.ledger.core.entity.state.MvpState;
 import ru.mbc.ledger.core.entity.state.MvpStateTx;
 import ru.mbc.ledger.core.entity.state.MvpStateTxContainer;
 import ru.mbc.ledger.core.error.api.InvalidParameter;
 import ru.mbc.ledger.database.ledgerDB.ledgerDbPostgre;
 import ru.mbc.ledger.util.Config;
-import ru.mbc.ledger.network.Endpoint;
 import ru.mbc.ledger.util.HashSum;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -97,6 +92,7 @@ public class MvpConfigNetwork extends Thread {
     }
 
     public void broadcast_new_block(MvpBlockContainer container){
+        System.out.println("Broadcasting block: " + container.block.getHash());
         for(Endpoint ep: endpoints){
             client
                     .post(ep.port, ep.ip, "/new_block/")
@@ -161,6 +157,7 @@ public class MvpConfigNetwork extends Thread {
             response.end("{\"status\": \"ok\"}");
 
             MvpBlockContainer container = new MvpBlockContainer(json);
+            System.out.println("Got remote block: " + container.block.getHash());
             blockchain.handleNewRemoteBlock(container);
         });
 
@@ -219,7 +216,7 @@ public class MvpConfigNetwork extends Thread {
             response.end(container.toJson());
         });
 
-        server.requestHandler(router).listen(config.general.bcPort);
+        server.requestHandler(router).listen(config.general.ledgerApiPort);
     }
 
 }

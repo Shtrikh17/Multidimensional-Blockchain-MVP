@@ -3,7 +3,6 @@ package ru.mbc.ledger.core.entity.block;
 import ru.mbc.ledger.consensus.BeaconConsensusStructure;
 import ru.mbc.ledger.core.entity.HashableEntity;
 import ru.mbc.ledger.core.entity.SerializableEntity;
-import ru.mbc.ledger.core.entity.state.MvpStateTx;
 import ru.mbc.ledger.core.error.structure.IncompleteObject;
 import ru.mbc.ledger.util.HashSum;
 
@@ -72,6 +71,21 @@ public class MvpBlock implements HashableEntity, SerializableEntity {
         return new HashSum(hash);
     }
 
+    public byte[] getRTxList(){
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        DataOutputStream dout = new DataOutputStream(out);
+        try {
+            dout.writeInt(rTxList.size());
+            for (HashSum h : rTxList) {
+                dout.write(h.getArray());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return out.toByteArray();
+    }
+
     public HashSum getSTxHash(){
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
@@ -92,6 +106,22 @@ public class MvpBlock implements HashableEntity, SerializableEntity {
         }
 
         return new HashSum(hash);
+    }
+
+    public byte[] getSTxList(){
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        DataOutputStream dout = new DataOutputStream(out);
+
+        try {
+            dout.writeInt(sTxList.size());
+            for (HashSum h : sTxList) {
+                dout.write(h.getArray());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return out.toByteArray();
     }
 
     public MvpBlock(){}

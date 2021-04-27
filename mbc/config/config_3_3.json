@@ -1,11 +1,11 @@
 {
   "general": {
     "genesis": true,
-    "node_id": "1",
-    "api_port": 8100,
-    "bc_port": 8101,
-    "mbc_server": 8102,
-    "mbc_manager": 8103
+    "node_id": "33",
+    "rest_api_port": 9300,
+    "ledger_api_port": 9301,
+    "mbc_module_port": 9302,
+    "mbc_verifier_port": 9303
   },
   "state": {
     "accounts": [
@@ -21,12 +21,12 @@
   "registry": {},
   "consensus": {
     "host": "127.0.0.1",
-    "port": 5000,
+    "port": 19000,
     "miningAllowed": true,
     "user": {
-      "privKey":"00beb4857062a4fb7790ae179728560ee95154f757ba420a2159c79df35a21a9ee",
-      "address":"e0cf85108223bffcf9838beafee115a45b9baeba82594f574084f57a3f024c07",
-      "pubKey":"6040163bbd22282e693cd6ba7ca4dffe1e2d1c6d03667c9d413fe771925e7b578d3e99ffc0fc03d086efeefe5683e158a95470661c5f5672221089f2bdc355c9"
+      "privKey": "4917138c7c6f7d42880cc9a3c42902c5e3cf010f08846d7652d34c3968642af2",
+      "address": "43b2c51eb8f599b6c8bc2a169451c36a0f1697ced64c47822134d490bd40fbc2",
+      "pubKey": "0091bdac1bec794f2949432871a560298443130ea7a62250be9f21665c3bbe6f48892c9959e27cc0b68a71936107c02d600f1e738c388e0b4f613a8023230f40a2"
     },
     "slot": 10
   },
@@ -34,11 +34,11 @@
     "peers": [
       {
         "ip": "127.0.0.1",
-        "port": 8201
+        "port": 9101
       },
       {
         "ip": "127.0.0.1",
-        "port": 8301
+        "port": 9201
       }
     ],
     "pingTimeout": 10,

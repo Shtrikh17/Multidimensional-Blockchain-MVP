@@ -12,6 +12,7 @@ import ru.mbc.ledger.util.HashSum;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class stateLogic {
 
@@ -44,9 +45,8 @@ public class stateLogic {
         return newState;
     }
 
-    public MvpState createGenesisState(Hashtable<HashSum, MvpLedgerAccount> initBalance, ArrayList<HashSum> superusers){
-        MvpState newState = new MvpState(initBalance, superusers);
-        return newState;
+    public MvpState createGenesisState(LinkedHashMap<HashSum, MvpLedgerAccount> initBalance, ArrayList<HashSum> superusers){
+        return new MvpState(initBalance, superusers);
     }
 
 }

@@ -1,7 +1,6 @@
 package ru.mbc.ledger.util;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -46,10 +45,10 @@ public class Config {
         jsonElement = json.getJSONObject("general");
         general.genesis = jsonElement.getBoolean("genesis");
         general.nodeId = jsonElement.getString("node_id");
-        general.apiPort = jsonElement.getInt("api_port");
-        general.bcPort = jsonElement.getInt("bc_port");
-        general.mbcPort = jsonElement.getInt("mbc_server");
-        general.mbcManager = jsonElement.getInt("mbc_manager");
+        general.restApiPort = jsonElement.getInt("rest_api_port");
+        general.ledgerApiPort = jsonElement.getInt("ledger_api_port");
+        general.mbcModulePort = jsonElement.getInt("mbc_module_port");
+        general.mbcVerifierPort = jsonElement.getInt("mbc_verifier_port");
 
         // Consensus
         jsonElement = json.getJSONObject("consensus");

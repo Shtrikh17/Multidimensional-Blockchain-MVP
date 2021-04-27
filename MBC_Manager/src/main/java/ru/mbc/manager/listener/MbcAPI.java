@@ -14,6 +14,12 @@ import ru.mbc.manager.config.NodeConfig;
 import ru.mbc.manager.verification.MbcLogic;
 import ru.mbc.manager.verification.TxDescriptor;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -25,13 +31,15 @@ public class MbcAPI extends Thread {
     String host;
     Integer port;
     MbcLogic logic;
+    Integer bcPort;
 
-    public MbcAPI(String host, Integer port, MbcLogic _logic){
+    public MbcAPI(String host, Integer port, MbcLogic _logic, Integer _bcPort){
         vertx = Vertx.vertx();
         server = vertx.createHttpServer();
         this.host = host;
         this.port = port;
         logic = _logic;
+        bcPort = _bcPort;
     }
 
     @Override
@@ -75,17 +83,13 @@ public class MbcAPI extends Thread {
             }
         });
 
-        router.route(HttpMethod.GET, "/verify/:ledgerId/:txHash/").handler(ctx -> {
+        router.route(HttpMethod.POST, "/verify/").handler(ctx -> {
 
             HttpServerResponse response = ctx.response();
-            String ledgerId = ctx.request().getParam("ledgerId");
-            String hash = ctx.request().getParam("txHash");
-            String targetLedgerAddress = null;
-            try {
-                targetLedgerAddress = new String(Hex.decodeHex(ledgerId));
-            } catch (DecoderException e) {
-                e.printStackTrace();
-            }
+            String json = ctx.getBodyAsString().strip();
+            JSONObject jo = new JSONObject(json);
+
+            String targetLedgerAddress = jo.getString("ledgerAddress");
             if(!targetLedgerAddress.equals(logic.getCurrentLedgerAddress())){
                 response.setStatusCode(404);
                 response.end("Wrong node");
@@ -93,8 +97,30 @@ public class MbcAPI extends Thread {
 
             // TODO: request to bc api
             Boolean result = false;
-            if(hash.equals("cafebabe"))
-                result = true;
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = null;
+            HttpResponse<String> httpResponse = null;
+            try {
+
+                request = HttpRequest.newBuilder().uri(new URI(
+                        "http",
+                        null,
+                        "127.0.0.1",
+                        bcPort,
+                        "/verify/",
+                        null,
+                        null
+                ))
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString(jo.toString())).build();
+                httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if(httpResponse.statusCode() == 200){
+                    result = true;
+                }
+            } catch (InterruptedException | IOException | URISyntaxException e) {
+                e.printStackTrace();
+            }
+
             if(!result){
                 response.setStatusCode(404);
                 response.end("Invalid verification");

@@ -4,7 +4,7 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import org.web3j.crypto.Hash;
 import ru.mbc.ledger.core.entity.HashableEntity;
@@ -20,24 +20,33 @@ import ru.mbc.ledger.util.transform;
 import ru.mbc.ledger.core.security.secUtil;
 
 public class MvpState implements SerializableEntity, HashableEntity {
-    private Hashtable<HashSum, MvpLedgerAccount> storage;
+    private LinkedHashMap<HashSum, MvpLedgerAccount> storage;
     private ArrayList<HashSum> superusers;
 
     public MvpState(){
-        storage = new Hashtable<>();
+        storage = new LinkedHashMap<>();
     }
 
     public MvpState(MvpState oldState){
-        storage = transform.deepCopy(oldState.storage);
+        storage = new LinkedHashMap<>();
+        for(HashSum h: oldState.storage.keySet()){
+            storage.put(h, new MvpLedgerAccount(oldState.storage.get(h)));
+        }
         superusers = transform.deepCopy2(oldState.superusers);
     }
 
-    public MvpState(Hashtable<HashSum, MvpLedgerAccount> _balances){
-        storage = transform.deepCopy2(_balances);
+    public MvpState(LinkedHashMap<HashSum, MvpLedgerAccount> _balances){
+        storage = new LinkedHashMap<>();
+        for(HashSum h: _balances.keySet()){
+            storage.put(h, new MvpLedgerAccount(_balances.get(h)));
+        }
     }
 
-    public MvpState(Hashtable<HashSum, MvpLedgerAccount> _balances, ArrayList<HashSum> _superusers){
-        storage = transform.deepCopy2(_balances);
+    public MvpState(LinkedHashMap<HashSum, MvpLedgerAccount> _balances, ArrayList<HashSum> _superusers){
+        storage = new LinkedHashMap<>();
+        for(HashSum h: _balances.keySet()){
+            storage.put(h, new MvpLedgerAccount(_balances.get(h)));
+        }
         superusers = transform.deepCopy2(_superusers);
     }
 
@@ -45,14 +54,17 @@ public class MvpState implements SerializableEntity, HashableEntity {
         set(data);
     }
 
-    public void set(Hashtable<HashSum, MvpLedgerAccount> _balances){
-        this.storage = transform.deepCopy2(_balances);
+    public void set(LinkedHashMap<HashSum, MvpLedgerAccount> _balances){
+        storage = new LinkedHashMap<>();
+        for(HashSum h: _balances.keySet()){
+            storage.put(h, new MvpLedgerAccount(_balances.get(h)));
+        }
     }
 
     public void set(byte[] data){
         ByteArrayInputStream in = new ByteArrayInputStream(data);
         DataInputStream din = new DataInputStream(in);
-        this.storage = new Hashtable<>();
+        this.storage = new LinkedHashMap<>();
         this.superusers = new ArrayList<>();
 
         try {
@@ -73,11 +85,11 @@ public class MvpState implements SerializableEntity, HashableEntity {
         }
     }
 
-    public Hashtable<HashSum, MvpLedgerAccount> getAccounts() {
+    public LinkedHashMap<HashSum, MvpLedgerAccount> getAccounts() {
         return storage;
     }
 
-    public void setInitialState(Hashtable<HashSum, MvpLedgerAccount> _storage, ArrayList<HashSum> _superusers){
+    public void setInitialState(LinkedHashMap<HashSum, MvpLedgerAccount> _storage, ArrayList<HashSum> _superusers){
         storage = _storage;
         superusers = _superusers;
     }
@@ -160,15 +172,16 @@ public class MvpState implements SerializableEntity, HashableEntity {
     }
 
     public byte[] serialize(){
+
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dout = new DataOutputStream(out);
         try {
             dout.writeInt(storage.size());
             for(HashSum hash: storage.keySet()){
-                    byte[] data = storage.get(hash).serialize();
-                    dout.write(hash.getArray());
-                    dout.writeInt(data.length);
-                    dout.write(data);
+                byte[] data = storage.get(hash).serialize();
+                dout.write(hash.getArray());
+                dout.writeInt(data.length);
+                dout.write(data);
             }
             dout.writeInt(superusers.size());
             for(HashSum hash: superusers){

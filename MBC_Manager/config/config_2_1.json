@@ -1,24 +1,25 @@
 {
   "mbc_api": {
     "ip": "127.0.0.1",
-    "port": 7103
+    "port": 7104
   },
   "bc_api": {
     "ip": "127.0.0.1",
     "port": 7102
   },
   "ledger": "/ledger1/ledger2",
+  "bc_port": 7103,
   "parent_nodes": [
     {
       "ip": "127.0.0.1",
-      "port": 8103
+      "port": 8104
     }
   ],
   "children": [
     {
     "ledger": "/ledger1/ledger2/ledger4",
     "nodes": [
-      {"ip": "127.0.0.1", "port": 6103}
+      {"ip": "127.0.0.1", "port": 6104}
     ]}
   ]
 }

@@ -38,7 +38,7 @@ public class Core implements Runnable {
         consensus = new BeaconConsensusSubprocess(consensusNotify, db, config, blockchain);                     // Thread for mining
         blockchain.setConsensus(consensus);                                                                     // fix dependency
         blockchain.setNetwork(network);
-        mbc = new mbcLogic("127.0.0.1", config.general.mbcPort, config.general.mbcManager, db);
+        mbc = new mbcLogic("127.0.0.1", config.general.mbcVerifierPort, config.general.mbcModulePort, db);
         handler = new ApiHandler(db, sLogic, chainSelector, network, mbc);                                                    // UI for observation & tx submission
     }
 

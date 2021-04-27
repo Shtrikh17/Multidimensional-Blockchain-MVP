@@ -10,6 +10,7 @@ import ru.mbc.ledger.util.HashSum;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,7 +24,7 @@ public class ledgerStateTxCheck {
         MvpLedgerAccount address1 = new MvpLedgerAccount(100);
         MvpLedgerAccount address2 = new MvpLedgerAccount(0);
 
-        Hashtable<HashSum, MvpLedgerAccount> balances = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances = new LinkedHashMap<>();
         balances.put(user1.getAddress(), address1);
         balances.put(user2.getAddress(), address2);
         MvpState state = new MvpState(balances);

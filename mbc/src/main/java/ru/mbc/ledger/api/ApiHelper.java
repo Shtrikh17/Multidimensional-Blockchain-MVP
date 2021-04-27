@@ -4,9 +4,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.web3j.crypto.Sign;
 import ru.mbc.ledger.core.entity.block.MvpBlock;
-import ru.mbc.ledger.core.entity.ledger.MvpLedgerAccount;
 import ru.mbc.ledger.core.entity.ledger.MvpLedgerDescriptor;
 import ru.mbc.ledger.core.entity.registry.MvpRegistry;
 import ru.mbc.ledger.core.entity.registry.MvpRegistryTx;
@@ -17,7 +15,6 @@ import ru.mbc.ledger.core.entity.state.MvpStateTxType;
 import ru.mbc.ledger.core.error.api.InvalidParameter;
 import ru.mbc.ledger.util.HashSum;
 
-import java.awt.image.Kernel;
 import java.util.ArrayList;
 
 public class ApiHelper {

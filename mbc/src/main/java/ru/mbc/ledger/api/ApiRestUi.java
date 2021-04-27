@@ -4,11 +4,8 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
-import ru.mbc.ledger.api.ApiHandler;
 import ru.mbc.ledger.util.Config;
 
 public class ApiRestUi implements Runnable {
@@ -210,6 +207,6 @@ public class ApiRestUi implements Runnable {
         });
 
 
-        server.requestHandler(router).listen(config.general.apiPort);
+        server.requestHandler(router).listen(config.general.restApiPort);
     }
 }

@@ -39,6 +39,8 @@ public class Config {
 
         // General
         general.ledgerAddress = json.getString("ledger");
+        general.bcVerifierPort = json.getInt("bc_port");
+
         ArrayList<String> tmp = new ArrayList<>(Arrays.asList(general.ledgerAddress.split("/")));
         tmp.remove(tmp.size() - 1);
         parent.ledgerAddress = String.join("/", tmp);

@@ -26,7 +26,7 @@ public class main {
         ArrayBlockingQueue<TxDescriptor> txQueue = new ArrayBlockingQueue<TxDescriptor>(10);
         BcAPI bcAPI = new BcAPI(config.bc_api.node.ip, config.bc_api.node.port, txQueue, config.general.ledgerAddress);
         MbcLogic logic = new MbcLogic(config, txQueue, config.bc_api.node.port);
-        MbcAPI mbcAPI = new MbcAPI(config.mbc_api.node.ip, config.mbc_api.node.port, logic);
+        MbcAPI mbcAPI = new MbcAPI(config.mbc_api.node.ip, config.mbc_api.node.port, logic, config.general.bcVerifierPort);
 
         Thread thread1 = new Thread(logic);
         Thread thread2 = new Thread(mbcAPI);

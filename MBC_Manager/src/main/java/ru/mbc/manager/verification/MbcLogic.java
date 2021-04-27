@@ -128,14 +128,15 @@ public class MbcLogic extends Thread {
         jo.put("tx", tx.getTxHash());
         jo.put("value", tx.getValue());
         jo.put("to", tx.getToAddress());
+        jo.put("ledgerAddress", tx.getLedgerAddress());
         String requestBody = jo.toString();
 
         try {
             request = HttpRequest.newBuilder().uri(new URI(
                     "http",
                     null,
-                    "127.0.0.1",
-                    bcPort,
+                    node.ip,
+                    node.port,
                     "/verify/",
                     null,
                     null

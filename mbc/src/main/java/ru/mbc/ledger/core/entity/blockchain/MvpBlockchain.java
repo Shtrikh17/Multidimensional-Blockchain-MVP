@@ -22,6 +22,7 @@ import ru.mbc.ledger.util.HashSum;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MvpBlockchain {
@@ -50,7 +51,7 @@ public class MvpBlockchain {
         if(c.general.genesis){
             db.dropLedger();
             db.initLedger();
-            Hashtable<HashSum, MvpLedgerAccount> accounts = new Hashtable<>();
+            LinkedHashMap<HashSum, MvpLedgerAccount> accounts = new LinkedHashMap<>();
             ArrayList<HashSum> superusers = new ArrayList<>();
             if(c.state.accounts.size() > 0){
                 for(Account account: c.state.accounts){
@@ -100,8 +101,11 @@ public class MvpBlockchain {
             return;
 
         // 1. check block hash sums
-        if(!container.block.getStateHash().equals(container.state.getHash()))
+        if(!container.block.getStateHash().equals(container.state.getHash())){
+            System.out.println("! " + container.state.getHash().toString());
+            System.out.println("Error: incorrect state hash in block");
             return;
+        }
         if(!container.block.getRegistryHash().equals(container.registry.getHash()))
             return;
         if(!container.block.getSTxHash().equals(container.sTx.getHash()))
@@ -156,6 +160,12 @@ public class MvpBlockchain {
             // 8. save rtx (if not present)
             db.addMultipleStateTx(container.sTx.getStorage());
             db.addMultipleRegistryTx(container.rTx.getStorage());
+            for(MvpStateTx tx: container.sTx.getStorage()){
+                db.txMarkAsIncluded(tx.getHash());
+            }
+            for(MvpRegistryTx tx: container.rTx.getStorage()){
+                db.markRegistryTxIncluded(tx.getHash());
+            }
 
             // 9. save state
             db.addState(container.state);

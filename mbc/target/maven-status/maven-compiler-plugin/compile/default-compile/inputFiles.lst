@@ -17,6 +17,7 @@
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/logic/stateLogic.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/block/MvpBlock.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/HashableEntity.java
+/home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/state/StateElement.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/util/HashSum.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/network/Endpoint.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/state/MvpState.java
@@ -41,10 +42,12 @@
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/registry/MvpRegistry.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/ledger/MvpLedgerDescriptor.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/error/tx/NonceError.java
+/home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/logic/mbcLogic.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/util/State.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/util/Network.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/consensus/BeaconConsensusStructure.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/security/secUtil.java
+/home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/app/CreateStateTxIn.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/Message/Message.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/entity/registry/MvpRegistryTxContainer.java
 /home/user/IdeaProjects/mbc/src/main/java/ru/mbc/ledger/core/error/tx/BalanceError.java

@@ -14,6 +14,7 @@ import ru.mbc.ledger.database.ledgerDB.ledgerDbPostgre;
 import ru.mbc.ledger.util.HashSum;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 
 public class TestDatabaseManagement {
 
@@ -28,7 +29,7 @@ public class TestDatabaseManagement {
         MvpLedgerAccount account2 = new MvpLedgerAccount(50);
 
         // Init state
-        Hashtable<HashSum, MvpLedgerAccount> balances = new Hashtable<>();
+        LinkedHashMap<HashSum, MvpLedgerAccount> balances = new LinkedHashMap<>();
         balances.put(user1.getAddress(), account1);
         balances.put(user2.getAddress(), account2);
         MvpState s1 = new MvpState(balances);

@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 import json, sqlite3, os, time, random
 from threading import Thread
+import sys
 
 # IMPORTANT
 # The program is insecure against multiple registrations. It is created only to give beacon to honest nodes. 
@@ -10,7 +11,7 @@ from threading import Thread
 #   2. Possibility to use Access Control Lists - to register it is necessary to provide signed certificate, nodes with revoked certificates cannot build blocks
 #   3. Possibility to listen to the ledger: if chosen node has not created a block in consequetive N rounds, exclude it from list
 
-database = "database.db"
+database = sys.argv[2]
 period = 10
 app = Flask(__name__)
 
@@ -115,4 +116,4 @@ def get_history():
 
 consensus_routine = ConsensusRoutine()
 consensus_routine.start()
-app.run()
+app.run(port=sys.argv[1])

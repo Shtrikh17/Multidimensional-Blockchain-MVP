@@ -6,16 +6,17 @@ import ru.mbc.ledger.database.ledgerDB.ledgerDbPostgre;
 import ru.mbc.ledger.util.HashSum;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Stack;
 
 public class BeaconConsensusChainSelector {
-    private ArrayList<MvpBlock> blockList;
+    private Hashtable<HashSum, Integer> blockSet;
     private ledgerDbPostgre db; // It will be needed for bootstrap process - enough to get blocks with nonce=MAX(nonce)-10 and get their heights
     Integer maxHeight;
     HashSum highestBlock;
 
     public BeaconConsensusChainSelector(ledgerDbPostgre _db){
-        blockList = new ArrayList<>();
+        blockSet = new Hashtable<>();
         db = _db;
         maxHeight = 0;
         highestBlock = null;
@@ -23,42 +24,27 @@ public class BeaconConsensusChainSelector {
 
     public void notifyGenesisBlock(MvpBlock newBlock){
         try{
-            blockList.clear();
-            blockList.add(newBlock);
-            maxHeight = newBlock.getSlot();
+            blockSet.clear();
+            blockSet.put(newBlock.getHash(), 0);
+            maxHeight = 0;
             highestBlock = newBlock.getHash();
-        }catch (NoSuchEntity ex){
-
-        }
+        }catch (NoSuchEntity ex){}
     }
 
     public HashSum notifyNewBlock(MvpBlock newBlock){
-        // Too old blocks are removed
-        if(maxHeight - newBlock.getSlot() > 10)
-            return highestBlock;
-
         // Check if parent is inside and substitute it
         if(newBlock.getSlot() > maxHeight){
             maxHeight = newBlock.getSlot();
             highestBlock = newBlock.getHash();
         }
-        for(int i = 0; i < blockList.size(); i++){
-            if(blockList.get(i).getHash().equals(newBlock.getPrevHash())){
-                blockList.set(i, newBlock);
-                break;
+        Integer N = 0;
+        for(HashSum h: blockSet.keySet()){
+            if(h.equals(newBlock.getPrevHash())){
+                N = blockSet.get(h) + 1;
             }
         }
 
-        // Clean up cache
-        Stack<MvpBlock> cleanup = new Stack<>();
-        for(MvpBlock b: blockList){
-            if(maxHeight - b.getSlot() > 10){
-                cleanup.push(b);
-            }
-        }
-        while(!cleanup.isEmpty()){
-            blockList.remove(cleanup.pop());
-        }
+        blockSet.put(newBlock.getHash(), 0);
 
         return highestBlock;
     }
@@ -68,12 +54,7 @@ public class BeaconConsensusChainSelector {
     }
 
     public MvpBlock getCurrentTopBlock() throws NoSuchEntity{
-        for(MvpBlock block: blockList){
-            if(highestBlock.equals(block.getHash())){
-                return block;
-            }
-        }
-        throw new NoSuchEntity("No top block found");
+        return db.getBlock(highestBlock);
     }
 
 }
