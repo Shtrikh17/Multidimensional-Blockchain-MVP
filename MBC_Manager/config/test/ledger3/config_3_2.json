@@ -7,12 +7,12 @@
     "ip": "127.0.0.1",
     "port": 9202
   },
-  "ledger": "/ledger1/ledger2",
+  "ledger": "/ledger1/ledger3",
   "bc_port": 9203,
   "parent_nodes": [
     {
       "ip": "127.0.0.1",
-      "port": 8104
+      "port": 7104
     }
   ],
   "children": [

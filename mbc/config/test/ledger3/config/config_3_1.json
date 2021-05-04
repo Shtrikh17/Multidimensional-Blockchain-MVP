@@ -10,12 +10,12 @@
   "state": {
     "accounts": [
       {
-        "address": "326c83f73feeeebccf94628a05a5b452f331c5bc87638ad38286363f1ddd22a4",
+        "address": "0e518e1101b5cec9be6476b4763c1f470cee205d588042fa31448024e6aa7918",
         "value": 10
       }
     ],
     "superusers": [
-      "e0cf85108223bffcf9838beafee115a45b9baeba82594f574084f57a3f024c07"
+      "08c024374af9766d81977d07b5d76a47708d138bff19d9472be046cfb494c72e"
     ]
   },
   "registry": {},
@@ -24,9 +24,9 @@
     "port": 19000,
     "miningAllowed": true,
     "user": {
-      "privKey":"00beb4857062a4fb7790ae179728560ee95154f757ba420a2159c79df35a21a9ee",
-      "address":"e0cf85108223bffcf9838beafee115a45b9baeba82594f574084f57a3f024c07",
-      "pubKey":"6040163bbd22282e693cd6ba7ca4dffe1e2d1c6d03667c9d413fe771925e7b578d3e99ffc0fc03d086efeefe5683e158a95470661c5f5672221089f2bdc355c9"
+      "privKey":"48b12acfb864aedd39aaa0bc4d911dde50ed8fbcbffcf3d1682355bbbdd204fa",
+      "address":"08c024374af9766d81977d07b5d76a47708d138bff19d9472be046cfb494c72e",
+      "pubKey":"7d97d10bbdbc1a510d2d9b266fe2db0485cdeae57b901b2ebb77c018918fc6cc86dac013f334406ae43f125da532b7ce25cda9c6031e6103092eebf6dfc20764"
     },
     "slot": 10
   },

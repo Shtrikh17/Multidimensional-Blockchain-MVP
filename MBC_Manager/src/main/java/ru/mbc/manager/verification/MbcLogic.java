@@ -151,7 +151,7 @@ public class MbcLogic extends Thread {
     }
 
     public void notifyBc(TxDescriptor tx){
-        String requestBody = "{\"tx\":\"" + tx.getTxHash() +"\" }";
+        String requestBody = "{\"tx\":\"" + tx.getTxInHash() +"\" }";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = null;
         HttpResponse<String> httpResponse = null;
@@ -205,6 +205,7 @@ public class MbcLogic extends Thread {
 
                     // Intersection and next nodes
                     Hashtable<NodeConfig, Integer> intersection = new Hashtable<>();
+                    Hashtable<String, Integer> nextLedgerIntersection = new Hashtable<>();
                     for(Response response: responses){
                         for(NodeConfig N: response.nodes){
                             if(intersection.containsKey(N)){
@@ -212,6 +213,14 @@ public class MbcLogic extends Thread {
                             }
                             else{
                                 intersection.put(N, 1);
+                            }
+                        }
+                        if(response.nextLedger != null){
+                            if(nextLedgerIntersection.containsKey(response.nextLedger)){
+                                nextLedgerIntersection.put(response.nextLedger, nextLedgerIntersection.get(response.nextLedger) + 1);
+                            }
+                            else{
+                                nextLedgerIntersection.put(response.nextLedger, 1);
                             }
                         }
                     }
@@ -222,6 +231,15 @@ public class MbcLogic extends Thread {
                         if(intersection.get(N) > responses.size() / 2)
                             nodes.add(N);
                     }
+                    int count = 0;
+                    String candidate = "";
+                    for(String s: nextLedgerIntersection.keySet()){
+                        if(nextLedgerIntersection.get(s) > count){
+                            candidate = s;
+                            count = nextLedgerIntersection.get(s);
+                        }
+                    }
+                    nextLedger = candidate;
                 }
                 if(!noNodes){
                     ArrayList<Boolean> responses = new ArrayList<>();

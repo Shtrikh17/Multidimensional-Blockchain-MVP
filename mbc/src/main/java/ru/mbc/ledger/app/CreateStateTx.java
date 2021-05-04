@@ -40,8 +40,8 @@ public class CreateStateTx {
 
 
     public static void main(String[] args){
-        String filename = "/home/user/IdeaProjects/mbc/config/user2.json";
-        String output = "/home/user/IdeaProjects/mbc/tx/tx3.json";
+        String filename = "/home/user/IdeaProjects/mbc/config/test/ledger3/user/user_3_2.json";
+        String output = "/home/user/IdeaProjects/mbc/config/test/ledger3/tx/tx_1_out.json";
 
         MvpLedgerUser user = readUserConfig(filename);
 

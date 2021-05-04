@@ -48,9 +48,10 @@ public class mbcLogic extends Thread{
 
     public void requestTxVerification(MvpStateTx tx){
         JSONObject jo = new JSONObject();
-        jo.put("tx", tx.getFrom());
+        jo.put("tx_out", tx.getFrom());
         jo.put("value", tx.getValue());
         jo.put("to", tx.getTo());
+        jo.put("tx_in", tx.getHash());
         String requestBody = jo.toString();
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = null;

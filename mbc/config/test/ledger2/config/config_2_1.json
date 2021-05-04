@@ -1,0 +1,47 @@
+{
+  "general": {
+    "genesis": true,
+    "node_id": "21",
+    "rest_api_port": 8100,
+    "ledger_api_port": 8101,
+    "mbc_module_port": 8102,
+    "mbc_verifier_port": 8103
+  },
+  "state": {
+    "accounts": [
+      {
+        "address": "4f5c6f7bea4d8e48eafe8e51c94b457b946fff8a789cf6fd98222d110bcecec5",
+        "value": 50
+      }
+    ],
+    "superusers": [
+      "5359b27981279cf08c7b731f5a448322d0d155128446e0d7bb4ff49ba337e9e5"
+    ]
+  },
+  "registry": {},
+  "consensus": {
+    "host": "127.0.0.1",
+    "port": 18000,
+    "miningAllowed": true,
+    "user": {
+      "privKey":"00811b0d90aa23cdc6c041e5d95bd6410b5c975df2c377dcef9c86b9fc1e8d374f",
+      "address":"5359b27981279cf08c7b731f5a448322d0d155128446e0d7bb4ff49ba337e9e5",
+      "pubKey":"00fb08a1ffab594884a1dfc7a92fe79bcfde2ad20942b50fcc6b4dd97681866ba0e46753d23e3b16d17c8d4d136db502320fc34766b6ee39fc7cffcad81057933d"
+    },
+    "slot": 10
+  },
+  "network": {
+    "peers": [
+      {
+        "ip": "127.0.0.1",
+        "port": 8201
+      },
+      {
+        "ip": "127.0.0.1",
+        "port": 8301
+      }
+    ],
+    "pingTimeout": 10,
+    "peerPort": 5555
+  }
+}

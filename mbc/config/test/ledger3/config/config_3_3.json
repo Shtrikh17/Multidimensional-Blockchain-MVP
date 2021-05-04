@@ -10,12 +10,12 @@
   "state": {
     "accounts": [
       {
-        "address": "326c83f73feeeebccf94628a05a5b452f331c5bc87638ad38286363f1ddd22a4",
+        "address": "0e518e1101b5cec9be6476b4763c1f470cee205d588042fa31448024e6aa7918",
         "value": 10
       }
     ],
     "superusers": [
-      "e0cf85108223bffcf9838beafee115a45b9baeba82594f574084f57a3f024c07"
+      "08c024374af9766d81977d07b5d76a47708d138bff19d9472be046cfb494c72e"
     ]
   },
   "registry": {},

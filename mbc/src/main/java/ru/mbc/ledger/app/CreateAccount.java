@@ -20,7 +20,7 @@ public class CreateAccount {
 
         String result = jo.toString();
 
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("/home/user/IdeaProjects/mbc/config/user5.json"), "utf-8"))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("/home/user/IdeaProjects/mbc/config/test/ledger3/user/user_3_3.json"), "utf-8"))) {
             writer.write(result);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
